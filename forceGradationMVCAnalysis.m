@@ -1,0 +1,79 @@
+%	This program is free software: you can redistribute it and/or modify
+%    it under the terms of the GNU General Public License as published by
+%    the Free Software Foundation, either version 3 of the License, or
+%    (at your option) any later version.
+%
+%    This program is distributed in the hope that it will be useful,
+%    but WITHOUT ANY WARRANTY; without even the implied warranty of
+%    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+%    GNU General Public License for more details.
+%
+%    You should have received a copy of the GNU General Public License
+%   along with this program.  If not, see <http://www.gnu.org/licenses/>.
+%
+%	N.B.  the above text was copied from http://www.gnu.org/licenses/gpl.html
+%	unmodified. I have not attached a copy of the GNU license to the source...
+%
+%    Copyright (C) 2011-2012 Timo Rantalainen tjrantal@gmail.com
+
+%% Octave/Matlab script to analyse MEPs for the force gradation project. Written by Timo Rantalainen 2011 
+
+setenv("GSC","GSC"); %To get rid of annoying error messages, when printing images...
+clear all;
+close all;
+%HARD CODED CONSTANTS saved in constants structure %headings = fieldnames(data);
+constants.forceEpoc = 500;
+constants.forceScaling = 9.8*1.356;		%Force scaling
+constants.baseFolder = 'H:\UserData\winMigrationBU\Deakin\TMS_KIDGELL2011';
+%constants.baseFolder = '/media/sf_Deakin/TMS_KIDGELL2011';
+constants.visualizationFolder =[constants.baseFolder '\forceResultImages\'];
+constants.resultsFolder = [constants.baseFolder '\forceResults\'];
+constants.dataFolder =[constants.baseFolder '\Data\'];
+%constants.visualizationFolder =[constants.baseFolder '/forceResultImages'];
+%constants.resultsFolder = [constants.baseFolder '/forceResults/'];
+%constants.dataFolder =[constants.baseFolder '/Data/'];
+constants.visualizationTitles= {'Force'};
+
+%Read pages from tab separated txt file
+constants.dataFiles = dir(constants.dataFolder);
+
+%Loop through files..	DEBUG p =6
+for p = 3:length(constants.dataFiles)
+	%Reading the data
+	dataFile = [constants.dataFolder constants.dataFiles(p).name];
+	%Check that we have a matching data file. If not, do nothing and go to next file...
+	try
+		data = load(dataFile);
+		data.data = data.data.*1000.0;		%Change V to mV
+		data.data(data.datastart(2,1):data.dataend(2,1)) =  data.data(data.datastart(2,1):data.dataend(2,1))/constants.forceScaling ; %Scale to Nms
+
+		disp(['Analysing ' dataFile])
+		continueAnalysis =1;
+	catch	
+		disp(['Data file not found ' dataFile])
+		continueAnalysis = 0;
+	end
+	if continueAnalysis ==1	%Do nothing unless a corresponding data file was found ...
+		%Go through the data
+		clear results;		%May be unnecessary, as a function is used to create the var...
+		results = analyseForceData(data,constants);
+		%Print results out
+		printForceResults(results,constants,constants.dataFiles(p).name);
+		%Visualize the data
+		figureToPlotTo = figure;
+		set(figureToPlotTo,'position',[10 10 1200 1200],'visible','off');%'on');%
+		hold on;
+		plot(results.forceTrace,'b');
+		plot(results.interestingIndices,results.forceTrace(results.interestingIndices),'g');
+		plot(results.selectedEpocIndex:results.selectedEpocIndex+constants.forceEpoc
+		,results.forceTrace(results.selectedEpocIndex:results.selectedEpocIndex+constants.forceEpoc),'r');
+		title('Force Trace');
+		print('-dpng',['-S' num2str(1200) ',' num2str(1200)],[constants.visualizationFolder constants.dataFiles(p).name(1:length(constants.dataFiles(p).name)-4) '_MVC_' num2str(i) '.png']);
+		close(figureToPlotTo);
+		
+		
+
+	end	%Come all the way down here, if the data file does not exist...
+end %Get next file to analyse
+close all;
+clear all;
