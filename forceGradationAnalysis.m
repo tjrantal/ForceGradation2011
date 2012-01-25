@@ -32,10 +32,10 @@ constants.visualizationInit = -100;
 constants.visualizationEpoc = 200;
 constants.samplingRate = 1000;	%Hz
 constants.channelDelays =  [0,-200,0];	%EMGs have a delay compared to force...
-%constants.baseFolder = 'H:\UserData\winMigrationBU\Deakin\TMS_KIDGELL2011';
-constants.baseFolder = '/media/sf_Deakin/TMS_KIDGELL2011';
-%separator = '\';
-separator = '/';
+constants.baseFolder = 'H:\UserData\winMigrationBU\Deakin\TMS_KIDGELL2011';
+%constants.baseFolder = '/media/sf_Deakin/TMS_KIDGELL2011';
+separator = '\';
+%separator = '/';
 constants.visualizationFolder =[constants.baseFolder separator 'resultImages'];
 constants.resultsFolder = [constants.baseFolder separator 'results' separator];
 
@@ -68,7 +68,7 @@ constants.overlayPairMatrix(:,:,2)	= [1,2,3;7,8,9];		%Skilled paired skilled sin
 constants.overlayPairMatrix(:,:,3)	= [7,8,9;10,11,12];	%Skilled single unskilled single
 constants.overlayPairMatrix(:,:,4)	= [4,5,6;10,11,12];	%Unskilled paired unskilled single
 
-%Loop through files..	DEBUG p = 6
+%Loop through files..	DEBUG p = 6 p =5 p = 12 p = 4
 for p = 3:length(constants.protocolFiles)
 	%Reading the protocol text file
 	protocolFullFileName = [constants.protocolFilePath separator constants.protocolFiles(p).name];
@@ -93,10 +93,12 @@ for p = 3:length(constants.protocolFiles)
 		%Go through the data
 		clear results;		%May be unnecessary, as a function is used to create the var...
 		results = analyseData(data,constants,indices);
-		%Debug plot(results(2).trial(1).visualizationTrace{3})
-		%hold on
-		%for k = 1: length(results(2).trial)
-		%	plot(results(2).trial(k).visualizationTrace{3})
+		%Debug 
+		%figure;,hold on;,k = 1;
+		% plot(results(13).trial(k).visualizationTrace{3}) ,k = k+1;
+		%figure;,hold on
+		%for k = [4 7 8 9]
+		%	plot(results(13).trial(k).visualizationTrace{3})
 		%end
 		%Print results out
 		printResults(results,constants,indices,dataFile);
@@ -105,6 +107,7 @@ for p = 3:length(constants.protocolFiles)
 		%Visualizeoverlays, manual plotting..
 		printVisualOverlays(data,results,constants,indices,dataFile);
 	end	%Come all the way down here, if the data file does not exist...
+	clear data results indices;
 end %Get next file to analyse
 close all;
 clear all;

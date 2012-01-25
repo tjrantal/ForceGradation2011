@@ -41,6 +41,7 @@ function printTrialGroupImages(data,results,constants,indices,dataFile)
 					hold on;
 					freqIndicesToPlot = find(results(i).trial(j).forcePowerSpectrumFreqs <= 40);
 					plot(results(i).trial(j).forcePowerSpectrumFreqs(freqIndicesToPlot),results(i).trial(j).forcePowerSpectrum(freqIndicesToPlot),'b')
+					plot(results(i).trial(j).forcePowerSpectrumFreqs(freqIndicesToPlot),results(i).trial(j).nonWindowedForcePowerSpectrum(freqIndicesToPlot),'r')
 				else
 					plot(results(i).trial(j).visualizationTrace{k},'b')
 					plot(-constants.visualizationInit+results(i).trial(j).ResponseLatency{k}:-constants.visualizationInit+results(i).trial(j).ResponseLatency{k}+constants.rmsEpoc
