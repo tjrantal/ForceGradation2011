@@ -17,11 +17,22 @@
 %    Copyright (C) 2011-2012 Timo Rantalainen tjrantal@gmail.com
 
 %Function for printing out data to a results file
-function printForceResults(results,constants,dataFile)
+function printForceResults(results,constants,indices,dataFile)
 	resultsFile = fopen([constants.resultsFolder dataFile(1:length(dataFile)-4) '.xls'],'w'); %Open file for writing
 	%Print header row
 	fprintf(resultsFile,'%s\t%s\n','File name','MVC [Nm]');
 	fprintf(resultsFile,'\n');
-	fprintf(resultsFile,'%s\t%f\n',dataFile,results.MVC);
+	fprintf(resultsFile,'%s\t',dataFile);
+	for i = 1:length(indices)	%Loop through conditions names
+		%MVC
+		temp = [];
+		for j = 1:length(results(i).trial)
+			temp(j) = results(i).trial(j).MVC;
+		end
+		tempOut = mean(temp);
+		fprintf(resultsFile,'%f\t',tempOut);
+	end
+	
+	fprintf(resultsFile,'\n');
 	fclose(resultsFile);		%Close file
 return

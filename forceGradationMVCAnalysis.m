@@ -25,28 +25,33 @@ close all;
 constants.forceEpoc = 500;
 constants.forceScaling = 9.8*1.356;		%Force scaling
 constants.baseFolder = 'H:\UserData\winMigrationBU\Deakin\TMS_KIDGELL2011';
-%constants.baseFolder = '/media/sf_Deakin/TMS_KIDGELL2011';
-constants.visualizationFolder =[constants.baseFolder '\forceResultImages\'];
-constants.resultsFolder = [constants.baseFolder '\forceResults\'];
-constants.dataFolder =[constants.baseFolder '\Data\'];
-%constants.visualizationFolder =[constants.baseFolder '/forceResultImages'];
-%constants.resultsFolder = [constants.baseFolder '/forceResults/'];
-%constants.dataFolder =[constants.baseFolder '/Data/'];
+constants.baseFolder = '/media/sf_Deakin/TMS_KIDGELL2011';
+separator = '\';
+separator = '/';
+constants.visualizationFolder =[constants.baseFolder separator 'forceResultImages' separator];
+constants.resultsFolder = [constants.baseFolder separator 'forceResults' separator];
+constants.dataFolder =[constants.baseFolder separator 'Data' separator];
+cd(constants.baseFolder);
 constants.visualizationTitles= {'Force'};
 
+%Get MVC page (added manually to protocols...)
+constants.trialGroups = {'MVC'};
 %Read pages from tab separated txt file
+constants.protocolFilePath =  [constants.baseFolder separator 'Protocols'];
+constants.protocolFiles = dir(constants.protocolFilePath);
+
+%List data files
 constants.dataFiles = dir(constants.dataFolder);
 
-%Loop through files..	DEBUG p =6
+%Loop through files..	DEBUG p =6 p = 4 p = 12
 for p = 3:length(constants.dataFiles)
 	%Reading the data
+	protocolFullFileName = [constants.protocolFilePath separator constants.protocolFiles(p).name];
 	dataFile = [constants.dataFolder constants.dataFiles(p).name];
 	%Check that we have a matching data file. If not, do nothing and go to next file...
 	try
 		data = load(dataFile);
 		data.data = data.data.*1000.0;		%Change V to mV
-		data.data(data.datastart(2,1):data.dataend(2,1)) =  data.data(data.datastart(2,1):data.dataend(2,1))/constants.forceScaling ; %Scale to Nms
-
 		disp(['Analysing ' dataFile])
 		continueAnalysis =1;
 	catch	
@@ -55,25 +60,30 @@ for p = 3:length(constants.dataFiles)
 	end
 	if continueAnalysis ==1	%Do nothing unless a corresponding data file was found ...
 		%Go through the data
+		clear protocolData;	%May be unnecessary, as a function is used to create the var...
+		protocolData = readProtocolFile(protocolFullFileName);	%Read data from protocol file
+		%Find indices for trials to be grouped
+		clear indices;		%May be unnecessary, as a function is used to create the var...
+		indices = groupTrials(protocolData,constants);	%Group trials according to the hardcoded trial names and corresponding names in protocol files
 		clear results;		%May be unnecessary, as a function is used to create the var...
-		results = analyseForceData(data,constants);
+		%DEBUG 
+		results = analyseForceData(data,constants,indices);
 		%Print results out
-		printForceResults(results,constants,constants.dataFiles(p).name);
+		printForceResults(results,constants,indices,constants.dataFiles(p).name);
 		%Visualize the data
 		figureToPlotTo = figure;
 		set(figureToPlotTo,'position',[10 10 1200 1200],'visible','off');%'on');%
 		hold on;
-		plot(results.forceTrace,'b');
-		plot(results.interestingIndices,results.forceTrace(results.interestingIndices),'g');
-		plot(results.selectedEpocIndex:results.selectedEpocIndex+constants.forceEpoc
-		,results.forceTrace(results.selectedEpocIndex:results.selectedEpocIndex+constants.forceEpoc),'r');
+		for t = 1:length(results(1).trial)
+			plot(results(1).trial(t).forceTrace,'b');
+			plot(results(1).trial(t).interestingIndices,results(1).trial(t).forceTrace(results(1).trial(t).interestingIndices),'g');
+			plot(results(1).trial(t).selectedEpocIndex:results(1).trial(t).selectedEpocIndex+constants.forceEpoc,results(1).trial(t).forceTrace(results(1).trial(t).selectedEpocIndex:results(1).trial(t).selectedEpocIndex+constants.forceEpoc),'r');
+		end
 		title('Force Trace');
 		print('-dpng',['-S' num2str(1200) ',' num2str(1200)],[constants.visualizationFolder constants.dataFiles(p).name(1:length(constants.dataFiles(p).name)-4) '_MVC_' num2str(i) '.png']);
 		close(figureToPlotTo);
-		
-		
-
 	end	%Come all the way down here, if the data file does not exist...
 end %Get next file to analyse
 close all;
 clear all;
+

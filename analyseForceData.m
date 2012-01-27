@@ -17,22 +17,30 @@
 %    Copyright (C) 2011-2012 Timo Rantalainen tjrantal@gmail.com
 
 %Function for analysing the MVC force data
-function [results] = analyseForceData(data,constants)
-	forceTrace = data.data(data.datastart(2,1):data.dataend(2,1));	%force is on channel 2 and MVC is always page 1
-	zeroLevel = median(forceTrace);
-	forceTrace = forceTrace -zeroLevel;
-	results.forceTrace = forceTrace;
-	forceTrigger = max(forceTrace)/2;
-	results.interestingIndices = find(forceTrace > forceTrigger);
-	interestingData = forceTrace(results.interestingIndices);
-	MVC = 0
-	for i =1:length(interestingData)-constants.forceEpoc
-		if mean(interestingData(i+constants.forceEpoc)) > MVC
-			MVC = mean(interestingData(i:i+constants.forceEpoc)) ;
-			selectedEpoc = i;
-		end		
+function [results] = analyseForceData(data,constants,indices)
+	results = struct;
+	for i = 1:length(indices)	%Loop through condition names
+		%i = 1;
+		for j = 1:length(indices(i).index)	%Loop through trials
+			forceTrace = data.data(data.datastart(2,indices(i).index(j)):data.dataend(2,indices(i).index(j)));	%force is on channel 2 and MVC is always page 1
+			%scale force Trace
+			forceTrace = forceTrace/constants.forceScaling;	%Scale to Nms			
+			
+			zeroLevel = median(forceTrace);
+			forceTrace = forceTrace -zeroLevel;
+			results(i).trial(j).forceTrace = forceTrace;
+			forceTrigger = max(forceTrace)/2;
+			results(i).trial(j).interestingIndices = find(forceTrace > forceTrigger);
+			interestingData = forceTrace(results(i).trial(j).interestingIndices);
+			MVC = 0
+			for d =1:length(interestingData)-constants.forceEpoc
+				if mean(interestingData(d+constants.forceEpoc)) > MVC
+					MVC = mean(interestingData(d:d+constants.forceEpoc)) ;
+					selectedEpoc = d;
+				end		
+			end
+			results(i).trial(j).MVC = MVC;
+			results(i).trial(j).selectedEpocIndex = results(i).trial(j).interestingIndices(selectedEpoc);
+		end
 	end
-	results.MVC = MVC;
-	results.selectedEpocIndex = results.interestingIndices(selectedEpoc);
-	
 return
