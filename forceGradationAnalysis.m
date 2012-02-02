@@ -28,17 +28,20 @@ constants.rmsDelay = 20;
 constants.rmsEpoc = 30;
 constants.amplitudeDelay = 10;
 constants.amplitudeEpoc =30;	%Used to be 40
-constants.visualizationInit = -100;
-constants.visualizationEpoc = 200;
+constants.visualizationInit = -20;	%Used to be -100
+constants.visualizationEpoc = 100;	%Used to be 200
 constants.samplingRate = 1000;	%Hz
 constants.channelDelays =  [0,-200,0];	%EMGs have a delay compared to force...
 constants.baseFolder = 'H:\UserData\winMigrationBU\Deakin\TMS_KIDGELL2011';
-constants.baseFolder = '/media/sf_Deakin/TMS_KIDGELL2011';
+%constants.baseFolder = '/media/sf_Deakin/TMS_KIDGELL2011';
 separator = '\';
+%separator = '/';
+constants.separator = separator;
 constants.scriptFolder = [constants.baseFolder separator 'octaveAnalysisScripts'];
 cd(constants.scriptFolder);
-%separator = '/';
+
 constants.visualizationFolder =[constants.baseFolder separator 'resultImages'];
+constants.publicationSamples =[constants.baseFolder separator 'Julkaisu' separator 'publicationSamples'];
 constants.resultsFolder = [constants.baseFolder separator 'results' separator];
 
 constants.dataFolder =[constants.baseFolder separator 'Data' separator];
@@ -60,10 +63,10 @@ constants.protocolFilePath =  [constants.baseFolder separator 'Protocols'];
 constants.protocolFiles = dir(constants.protocolFilePath);
 
 %Visualizeoverlays, manual plotting..
-constants.overlayTitles = {'Skilled Paired Unskilled Paired','Skilled Paired Skilled Single', ...
-	'Skilled Single Unskilled Single','Unskilled Paired Unskilled Single'};
+constants.overlayTitles = {'Skilled Paired Unskilled Paired','High Visuomotor Demand', ...
+	'Skilled Single Unskilled Single','Low Visuomotor Demand'};
 
-constants.forceLevels = {'5% ','20% ','40% '};
+constants.forceLevels = {'5% MVC ','20% MVC','40% MVC'};
 
 constants.overlayPairMatrix	= [1,2,3;4,5,6];		%Skilled paired unskilled paired
 constants.overlayPairMatrix(:,:,2)	= [1,2,3;7,8,9];		%Skilled paired skilled single
@@ -108,6 +111,7 @@ for p = 3:length(constants.protocolFiles)
 		printTrialGroupImages(data,results,constants,indices,dataFile);
 		%Visualizeoverlays, manual plotting..
 		printVisualOverlays(data,results,constants,indices,dataFile);
+		printPublicationSample(data,results,constants,indices,dataFile);
 	end	%Come all the way down here, if the data file does not exist...
 	clear data results indices;
 end %Get next file to analyse
