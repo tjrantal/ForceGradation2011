@@ -33,8 +33,10 @@ constants.visualizationEpoc = 200;
 constants.samplingRate = 1000;	%Hz
 constants.channelDelays =  [0,-200,0];	%EMGs have a delay compared to force...
 constants.baseFolder = 'H:\UserData\winMigrationBU\Deakin\TMS_KIDGELL2011';
-%constants.baseFolder = '/media/sf_Deakin/TMS_KIDGELL2011';
+constants.baseFolder = '/media/sf_Deakin/TMS_KIDGELL2011';
 separator = '\';
+constants.scriptFolder = [constants.baseFolder separator 'octaveAnalysisScripts'];
+cd(constants.scriptFolder);
 %separator = '/';
 constants.visualizationFolder =[constants.baseFolder separator 'resultImages'];
 constants.resultsFolder = [constants.baseFolder separator 'results' separator];

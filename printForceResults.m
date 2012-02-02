@@ -20,7 +20,7 @@
 function printForceResults(results,constants,indices,dataFile)
 	resultsFile = fopen([constants.resultsFolder dataFile(1:length(dataFile)-4) '.xls'],'w'); %Open file for writing
 	%Print header row
-	fprintf(resultsFile,'%s\t%s\n','File name','MVC [Nm]');
+	fprintf(resultsFile,'%s\t%s','File name','MVC [Nm]');
 	fprintf(resultsFile,'\n');
 	fprintf(resultsFile,'%s\t',dataFile);
 	for i = 1:length(indices)	%Loop through conditions names

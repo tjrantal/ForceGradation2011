@@ -25,9 +25,9 @@ close all;
 constants.forceEpoc = 500;
 constants.forceScaling = 9.8*1.356;		%Force scaling
 constants.baseFolder = 'H:\UserData\winMigrationBU\Deakin\TMS_KIDGELL2011';
-constants.baseFolder = '/media/sf_Deakin/TMS_KIDGELL2011';
+%constants.baseFolder = '/media/sf_Deakin/TMS_KIDGELL2011';
 separator = '\';
-separator = '/';
+%separator = '/';
 constants.visualizationFolder =[constants.baseFolder separator 'forceResultImages' separator];
 constants.resultsFolder = [constants.baseFolder separator 'forceResults' separator];
 constants.dataFolder =[constants.baseFolder separator 'Data' separator];
