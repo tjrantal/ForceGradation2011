@@ -33,16 +33,30 @@ function printPublicationSample(data,results,constants,indices,dataFile)
 				%First data
 				for j = 1:length(indices(constants.overlayPairMatrix(1,k,i)).index)
 					plot(results(constants.overlayPairMatrix(1,k,i)).trial(j).visualizationTrace{t},'color',[0.5 0.5 0.5])
-					plot(-constants.visualizationInit+results(constants.overlayPairMatrix(1,k,i)).trial(j).ResponseLatency{t}:-constants.visualizationInit+results(constants.overlayPairMatrix(1,k,i)).trial(j).ResponseLatency{t}+constants.rmsEpoc
-						,results(constants.overlayPairMatrix(1,k,i)).trial(j).visualizationTrace{t}(-constants.visualizationInit+results(constants.overlayPairMatrix(1,k,i)).trial(j).ResponseLatency{t}:-constants.visualizationInit+results(constants.overlayPairMatrix(1,k,i)).trial(j).ResponseLatency{t}+constants.rmsEpoc),'color',[0 0 0]);
+					responseIndices = -constants.visualizationInit+results(constants.overlayPairMatrix(1,k,i)).trial(j).ResponseLatency{t}:-constants.visualizationInit+results(constants.overlayPairMatrix(1,k,i)).trial(j).ResponseLatency{t}+constants.rmsEpoc;
+					plot(responseIndices,results(constants.overlayPairMatrix(1,k,i)).trial(j).visualizationTrace{t}(responseIndices),'color',[0 0 0]);
 				end
 				%Overlay data
 				for j = 1:length(indices(constants.overlayPairMatrix(2,k,i)).index)
+					responseIndices = -constants.visualizationInit+results(constants.overlayPairMatrix(2,k,i)).trial(j).ResponseLatency{t}:-constants.visualizationInit+results(constants.overlayPairMatrix(2,k,i)).trial(j).ResponseLatency{t}+constants.rmsEpoc;
 					%Plot dashed line manually...
 					step =5;
+
 					for p = 1:step:length(results(constants.overlayPairMatrix(2,k,i)).trial(j).visualizationTrace{t})-step+1
-						plot(p:(p+step-2),results(constants.overlayPairMatrix(2,k,i)).trial(j).visualizationTrace{t}(p:(p+step-2)),'color',[0.5 0.5 0.5])
+						paintBlack = [];
+						plotIndices = p:(p+step-2);
+						for pb =  plotIndices
+							if ~isempty(find(responseIndices == pb))
+								paintBlack = cat(2,paintBlack, pb);
+							end
+						end
+						plot(plotIndices,results(constants.overlayPairMatrix(2,k,i)).trial(j).visualizationTrace{t}(plotIndices),'color',[0.5 0.5 0.5])
+						if ~isempty(paintBlack)
+							plot(paintBlack,results(constants.overlayPairMatrix(2,k,i)).trial(j).visualizationTrace{t}(paintBlack),'color',[0 0 0]);%,'linewidth',2)
+						end
+				
 					end
+
 				end
 				title([constants.forceLevels{k} constants.overlayTitles{i}]);
 				box;
@@ -50,7 +64,7 @@ function printPublicationSample(data,results,constants,indices,dataFile)
 		end
 		
 	end											
-	print('-dpng',['-S' num2str(1200) ',' num2str(1200)],[constants.publicationSamples constants.separator dataFile(1:length(dataFile)-4) '_0_' constants.overlayTitles{i} '_' num2str(i) '.png']);
+	print('-dgif',['-S' num2str(2400) ',' num2str(2400)],[constants.publicationSamples constants.separator dataFile(1:length(dataFile)-4) '_0_' constants.overlayTitles{i} '.gif']);
 	close(figureToPlotTo);
 
 return
