@@ -62,36 +62,22 @@ function printPublicationSample(data,results,constants,indices,dataFile)
 				end
 				%Overlay data
 				for j = 1:length(indices(constants.overlayPairMatrix(2,k,i)).index)
+					plot(results(constants.overlayPairMatrix(2,k,i)).trial(j).visualizationTrace{t},'color',[0 0 1])
 					responseIndices = -constants.visualizationInit+results(constants.overlayPairMatrix(2,k,i)).trial(j).ResponseLatency{t}:-constants.visualizationInit+results(constants.overlayPairMatrix(2,k,i)).trial(j).ResponseLatency{t}+constants.rmsEpoc;
-					%Plot dashed line manually...
-					step =5;
-
-					for p = 1:step:length(results(constants.overlayPairMatrix(2,k,i)).trial(j).visualizationTrace{t})-step+1
-						paintBlack = [];
-						plotIndices = p:(p+step-2);
-						for pb =  plotIndices
-							if ~isempty(find(responseIndices == pb))
-								paintBlack = cat(2,paintBlack, pb);
-							end
-						end
-						plot(plotIndices,results(constants.overlayPairMatrix(2,k,i)).trial(j).visualizationTrace{t}(plotIndices),'color',[0.5 0.5 0.5])
-						if ~isempty(paintBlack)
-							plot(paintBlack,results(constants.overlayPairMatrix(2,k,i)).trial(j).visualizationTrace{t}(paintBlack),'color',[0 0 0]);%,'linewidth',2)
-						end
-				
-					end
-
+					plot(responseIndices,results(constants.overlayPairMatrix(2,k,i)).trial(j).visualizationTrace{t}(responseIndices),'color',[1 0 0]);
 				end
 				%Figure out suitable yScale...
 				lisa = mod(floor(min(yScale))-ceil(max(yScale)),4);
 				%gset arrow from 20,20 to 20,0
-				quiver(20,7,0,-3,'linewidth',2,'color',[0 0 0]);
-				quiver(23,7,0,-3,'linewidth',2,'color',[0.5 0.5 0.5]);
+				quiverYOrigin = yScale(2)-(yScale(2)-yScale(1))*0.15;
+				quiverYLength = (yScale(2)-yScale(1))*0.15;
+				quiver(20,quiverYOrigin,0,-quiverYLength,'linewidth',2,'color',[1 0 0]);
+				quiver(23,quiverYOrigin,0,-quiverYLength,'linewidth',2,'color',[0 0 0]);
 				set(gca,'xtick',[0:20:constants.visualizationEpoc],'xticklabel',[constants.visualizationInit:20:constants.visualizationInit+constants.visualizationEpoc],
 				
 				'ytick', [floor(min(yScale)):4:ceil(max(yScale))+lisa],
 				'fontsize',24);
-				title([constants.forceLevels{k} constants.overlayTitles{i}],'fontsize',24);
+				title([constants.forceLevels{k} ' ' constants.overlayTitles{i}],'fontsize',24);
 				box;
 				axis([0 constants.visualizationEpoc yScale(1) yScale(2)]);
 				xlabel('time [ms]','fontsize',24);
