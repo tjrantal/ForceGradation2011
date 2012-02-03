@@ -16,6 +16,30 @@
 %Function for printing out result images
 function printPublicationSample(data,results,constants,indices,dataFile)
 
+	%Get scaling limits here...
+	minVals = [];	%Save min and max EMG values here...
+	maxVals = [];	%Save min and max EMG values here...
+	for i = [2 4]	%Loop through the overlay pairs
+		for k = 1:size(constants.overlayPairMatrix,2)
+			for t = [3]
+				for j = 1:length(indices(constants.overlayPairMatrix(1,k,i)).index)
+					responseIndices = -constants.visualizationInit+results(constants.overlayPairMatrix(1,k,i)).trial(j).ResponseLatency{t}:-constants.visualizationInit+results(constants.overlayPairMatrix(1,k,i)).trial(j).ResponseLatency{t}+constants.rmsEpoc;
+					minVal = min(results(constants.overlayPairMatrix(1,k,i)).trial(j).visualizationTrace{t});
+					maxVal = max(results(constants.overlayPairMatrix(1,k,i)).trial(j).visualizationTrace{t});
+					minVals = cat(2,minVals,minVal);
+					maxVals = cat(2,maxVals,maxVal);
+				end
+				for j = 1:length(indices(constants.overlayPairMatrix(2,k,i)).index)
+					responseIndices = -constants.visualizationInit+results(constants.overlayPairMatrix(2,k,i)).trial(j).ResponseLatency{t}:-constants.visualizationInit+results(constants.overlayPairMatrix(2,k,i)).trial(j).ResponseLatency{t}+constants.rmsEpoc;
+					minVal = min(results(constants.overlayPairMatrix(2,k,i)).trial(j).visualizationTrace{t});
+					maxVal = max(results(constants.overlayPairMatrix(2,k,i)).trial(j).visualizationTrace{t});
+					minVals = cat(2,minVals,minVal);
+					maxVals = cat(2,maxVals,maxVal);
+				end
+			end
+		end
+	end
+	yScale = [min(minVals) max(maxVals)]*1.05;
 	figureToPlotTo = figure;
 	set(figureToPlotTo,'position',[10 10 1200 1200],'visible','off');
 	for k = 1:6
@@ -58,13 +82,26 @@ function printPublicationSample(data,results,constants,indices,dataFile)
 					end
 
 				end
-				title([constants.forceLevels{k} constants.overlayTitles{i}]);
+				%Figure out suitable yScale...
+				lisa = mod(floor(min(yScale))-ceil(max(yScale)),4);
+				%gset arrow from 20,20 to 20,0
+				quiver(20,7,0,-3,'linewidth',2,'color',[0 0 0]);
+				quiver(23,7,0,-3,'linewidth',2,'color',[0.5 0.5 0.5]);
+				set(gca,'xtick',[0:20:constants.visualizationEpoc],'xticklabel',[constants.visualizationInit:20:constants.visualizationInit+constants.visualizationEpoc],
+				
+				'ytick', [floor(min(yScale)):4:ceil(max(yScale))+lisa],
+				'fontsize',24);
+				title([constants.forceLevels{k} constants.overlayTitles{i}],'fontsize',24);
 				box;
+				axis([0 constants.visualizationEpoc yScale(1) yScale(2)]);
+				xlabel('time [ms]','fontsize',24);
+				ylabel('Biceps Brachii EMG [mV]','fontsize',24);
+				
 			end
 		end
 		
 	end											
-	print('-dgif',['-S' num2str(2400) ',' num2str(2400)],[constants.publicationSamples constants.separator dataFile(1:length(dataFile)-4) '_0_' constants.overlayTitles{i} '.gif']);
+	print('-dgif',['-S' num2str(1200) ',' num2str(1200)],[constants.publicationSamples constants.separator dataFile(1:length(dataFile)-4) '_0_' constants.overlayTitles{i} '.gif']);
 	close(figureToPlotTo);
 
 return
