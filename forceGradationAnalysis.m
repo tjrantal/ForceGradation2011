@@ -99,20 +99,13 @@ for p = 3:length(constants.protocolFiles)
 		%Go through the data
 		clear results;		%May be unnecessary, as a function is used to create the var...
 		results = analyseData(data,constants,indices);
-		%Debug 
-		%figure;,hold on;,k = 1;
-		% plot(results(13).trial(k).visualizationTrace{3}) ,k = k+1;
-		%figure;,hold on
-		%for k = [4 7 8 9]
-		%	plot(results(13).trial(k).visualizationTrace{3})
-		%end
 		%Print results out
 		printResults(results,constants,indices,dataFile);
 		%Visualize the data
-		printTrialGroupImages(data,results,constants,indices,dataFile);
+			printTrialGroupImages(data,results,constants,indices,dataFile);	%Images disabled..
 		%Visualizeoverlays, manual plotting..
-		printVisualOverlays(data,results,constants,indices,dataFile);
-		printPublicationSample(data,results,constants,indices,dataFile);
+			printVisualOverlays(data,results,constants,indices,dataFile);	%Images disabled...
+			printPublicationSample(data,results,constants,indices,dataFile);	%Images disabled
 	end	%Come all the way down here, if the data file does not exist...
 	clear data results indices;
 end %Get next file to analyse
