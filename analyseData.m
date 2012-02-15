@@ -34,21 +34,23 @@ function [results] = analyseData(data,constants,indices)
 				end
 				
 				if k == 2	%If force channel, calculate STD, coefficient of variation and frequency i = 1, j = 1,k =2
-					results(i).trial(j).trace{k} =data.data(data.datastart(k,indices(i).index(j)):data.dataend(k,indices(i).index(j)));
-					fSTD = std(data.data(data.datastart(k,indices(i).index(j))+constants.trigger+constants.backroundEpoc+constants.channelDelays(k):data.datastart(k,indices(i).index(j))+constants.trigger-1+constants.channelDelays(k))); %500 ms stdev epoc from -600 to -100  prior to trigger
-					fMEAN = mean(data.data(data.datastart(k,indices(i).index(j))+constants.trigger+constants.backroundEpoc+constants.channelDelays(k):data.datastart(k,indices(i).index(j))+constants.trigger-1+constants.channelDelays(k)));	%500 ms mean epoc from -600 to -100  prior to trigger
+					forceTrace = data.data(data.datastart(k,indices(i).index(j)):data.dataend(k,indices(i).index(j)))/constants.forceScaling;	%Scale to Nms	
+					results(i).trial(j).trace{k} =forceTrace;
+					forceEpoc = forceTrace(constants.trigger+constants.backroundEpoc+constants.channelDelays(k):constants.trigger-1+constants.channelDelays(k));
+					fSTD = std(forceEpoc); %500 ms stdev epoc from -600 to -100  prior to trigger
+					fMEAN = mean(forceEpoc);	%500 ms mean epoc from -600 to -100  prior to trigger
+
+					results(i).trial(j).forceMEAN = fMEAN; %500 ms mean window from -600 to -100ms prior to trigger
 					results(i).trial(j).forceSTD = fSTD; %500 ms stdev window from -600 to -100  prior to trigger
-					results(i).trial(j).forceCV = fMEAN/fSTD; %500 ms stdev window from -600 to -100  prior totrigger
+					results(i).trial(j).forceCV = fSTD/fMEAN*100.0; %500 ms stdev window from -600 to -100  prior totrigger
+
 					%FFT analysis
-					fftData = data.data(data.datastart(k,indices(i).index(j))+constants.trigger+constants.backroundEpoc+constants.channelDelays(k):data.datastart(k,indices(i).index(j))+constants.trigger-1+constants.channelDelays(k));
-					fftData =  fftData - mean(fftData);		%Remove DC component
+					fftData =  forceEpoc - mean(forceEpoc);		%Remove DC component
 					hannWindow = hanning(length(fftData));	%Create hann window
 					hanData = fftData.*hannWindow';		%Apply Hann windowing function
 					fftForce = fft(hanData); %500 ms stdev epoc from -600 to -100  prior to trigger
 					fftForceNonWindowed = fft(fftData);
-					freqs = linspace(0,constants.samplingRate/2,floor(length(fftForce)/2))';
-					
-					
+					freqs = linspace(0,constants.samplingRate/2,floor(length(fftForce)/2))';					
 					powerSpectrum = (abs(fftForce).^2)/(length(fftForce)/2); 
 					powerSpectrum(1) = powerSpectrum(1)/2; 
 					nonWindowedPowerSpectrum = (abs(fftForceNonWindowed).^2)/(length(fftForceNonWindowed)/2); 
@@ -59,7 +61,7 @@ function [results] = analyseData(data,constants,indices)
 					totalSum = sum(powerSpectrum(1:length(freqs)));
 					cumSum = cumsum(powerSpectrum(1:length(freqs)));
 					results(i).trial(j).forceMDF = freqs(find(cumSum>=totalSum/2,1,'first' ));
-					clear cumSum totalSum nonWindowedPowerSpectrum powerSpectrum freqs fftForceNonWindowed fftForce hanData hannWindow fftData;
+					clear cumSum totalSum nonWindowedPowerSpectrum powerSpectrum freqs fftForceNonWindowed fftForce hanData hannWindow fftData forceTrace forceEpoc;
 				end
 				
 			end

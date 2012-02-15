@@ -31,7 +31,6 @@ constants.amplitudeEpoc =30;	%Used to be 40
 constants.visualizationInit = -20;	%Used to be -100
 constants.visualizationEpoc = 100;	%Used to be 200
 constants.samplingRate = 1000;	%Hz
-constants.forceScaling = 9.8*1.356;		%Force scaling
 constants.channelDelays =  [0,-200,0];	%EMGs have a delay compared to force...
 constants.baseFolder = 'H:\UserData\winMigrationBU\Deakin\TMS_KIDGELL2011';
 %constants.baseFolder = '/media/sf_Deakin/TMS_KIDGELL2011';
@@ -41,26 +40,26 @@ constants.separator = separator;
 constants.scriptFolder = [constants.baseFolder separator 'octaveAnalysisScripts'];
 cd(constants.scriptFolder);
 
-constants.visualizationFolder =[constants.baseFolder separator 'resultImages'];
+constants.visualizationFolder =[constants.baseFolder separator 'mReAnaResultFig'];
 constants.publicationSamples =[constants.baseFolder separator 'Julkaisu' separator 'publicationSamples'];
-constants.resultsFolder = [constants.baseFolder separator 'results' separator];
+constants.resultsFolder = [constants.baseFolder separator 'mReAnaResult' separator];
 
-constants.dataFolder =[constants.baseFolder separator 'Data' separator];
+constants.dataFolder =[constants.baseFolder separator 'subj4MReAna' separator];
 %Hard coded trial names to find
 constants.trialGroups = {'Skilled 5% Paired','Skilled 20% Paired','Skilled 40% Paired', ...
  	'Unskilled 5% Paired', 'Unskilled 20% Paired','Unskilled 40% Paired', ...
  	'Skilled 5% Single','Skilled 20% Single','Skilled 40% Single', ...
  	'Unskilled 5% Single','Unskilled 20% Single','Unskilled 40% Single', ...
- 	'Max'};
+ 	'MaxBB','MaxBR'};
 
 constants.visualizationTitles= {'Skilled_5_Paired','Skilled_20_Paired','Skilled_40_Paired','Unskilled_5_Paired', ...
 	'Unskilled_20_Paired','Unskilled_40-Paired','Skilled_5_Single','Skilled_20_Single', ...
-	'Skilled_40_Single','Unskilled_5_Single','Unskilled_20_Single','Unskilled_40_Single','Max_M'};
+	'Skilled_40_Single','Unskilled_5_Single','Unskilled_20_Single','Unskilled_40_Single','MaxBB_M','Max_MBR'};
 	
 constants.inhibitionResultTitlesRMS = {'Normalized RMS Skilled 5%', 'Normalized RMS Skilled 20%', 'Normalized RMS Skilled 40%', 'Normalized RMS UnSkilled 5%', 'Normalized RMS UnSkilled 20%', 'Normalized RMS UnSkilled 40%'};
 constants.inhibitionResultTitlesPtoP = {'Normalized peak-to-peak Skilled 5%', 'Normalized peak-to-peak Skilled 20%', 'Normalized peak-to-peak Skilled 40%', 'Normalized peak-to-peak UnSkilled 5%', 'Normalized peak-to-peak UnSkilled 20%', 'Normalized peak-to-peak UnSkilled 40%'};
 %Read pages from tab separated txt file
-constants.protocolFilePath =  [constants.baseFolder separator 'Protocols'];
+constants.protocolFilePath =  [constants.baseFolder separator 'protoSubj4MReAna'];
 constants.protocolFiles = dir(constants.protocolFilePath);
 
 %Visualizeoverlays, manual plotting..
@@ -111,8 +110,8 @@ for p = 3:length(constants.protocolFiles)
 		%Visualize the data
 		printTrialGroupImages(data,results,constants,indices,dataFile);
 		%Visualizeoverlays, manual plotting..
-		printVisualOverlays(data,results,constants,indices,dataFile);
-		printPublicationSample(data,results,constants,indices,dataFile);
+		%printVisualOverlays(data,results,constants,indices,dataFile);
+		%printPublicationSample(data,results,constants,indices,dataFile);
 	end	%Come all the way down here, if the data file does not exist...
 	clear data results indices;
 end %Get next file to analyse

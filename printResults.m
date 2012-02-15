@@ -35,7 +35,7 @@ function printResults(results,constants,indices,dataFile)
 	end
 	for i = 1:length(indices)	%Loop through conditions names
 		%Force fluctuation
-		fprintf(resultsFile,'%s\t%s\t%s\t',['Ch 2 STDev ' constants.trialGroups{i}],['Ch 2 CV  ' constants.trialGroups{i}],['Ch 2 MDF  ' constants.trialGroups{i}]);
+		fprintf(resultsFile,'%s\t%s\t%s\t%s\t',['Ch 2 Mean ' constants.trialGroups{i}],['Ch 2 STDev ' constants.trialGroups{i}],['Ch 2 CV  ' constants.trialGroups{i}],['Ch 2 MDF  ' constants.trialGroups{i}]);
 	end
 	for i = 1:length(indices)	%Loop through conditions names
 		%NORMALIZED RESULTS
@@ -93,7 +93,11 @@ function printResults(results,constants,indices,dataFile)
 			temp(j,2) = results(i).trial(j).backgroundEMG{3};
 		end
 		tempOut = mean(temp);
-		fprintf(resultsFile,'%f\t%f\t',tempOut(1),tempOut(2));
+		if isnan(tempOut)
+			fprintf(resultsFile,'%f\t%f\t',NaN,NaN);		
+		else
+			fprintf(resultsFile,'%f\t%f\t',tempOut(1),tempOut(2));
+		end
 	end
 	for i = 1:length(indices)	%Loop through conditions names
 
@@ -104,7 +108,11 @@ function printResults(results,constants,indices,dataFile)
 			temp(j,2) = results(i).trial(j).ResponseRMS{3};
 		end
 		tempOut = mean(temp);
-		fprintf(resultsFile,'%f\t%f\t',tempOut(1),tempOut(2));
+		if isnan(tempOut)
+			fprintf(resultsFile,'%f\t%f\t',NaN,NaN);		
+		else
+			fprintf(resultsFile,'%f\t%f\t',tempOut(1),tempOut(2));
+		end
 	end
 	for i = 1:length(indices)	%Loop through conditions names
 
@@ -115,18 +123,28 @@ function printResults(results,constants,indices,dataFile)
 			temp(j,2) = results(i).trial(j).ResponseAmplitude{3};
 		end
 		tempOut = mean(temp);
-		fprintf(resultsFile,'%f\t%f\t',tempOut(1),tempOut(2));
+		if isnan(tempOut)
+			fprintf(resultsFile,'%f\t%f\t',NaN,NaN);		
+		else
+			fprintf(resultsFile,'%f\t%f\t',tempOut(1),tempOut(2));
+		end
 	end
 	for i = 1:length(indices)	%Loop through conditions names
 		%Force fluctuation
 		temp = [];
 		for j = 1:length(results(i).trial)
-			temp(j,1) = results(i).trial(j).forceSTD;	
-			temp(j,2) = results(i).trial(j).forceCV;
-			temp(j,3) = results(i).trial(j).forceMDF;
+			temp(j,1) = results(i).trial(j).forceMEAN;	
+			temp(j,2) = results(i).trial(j).forceSTD;	
+			temp(j,3) = results(i).trial(j).forceCV;
+			temp(j,4) = results(i).trial(j).forceMDF;
 		end
 		tempOut = mean(temp);
-		fprintf(resultsFile,'%f\t%f\t%f\t',tempOut(1),tempOut(2),tempOut(3));
+		if isnan(tempOut)
+			fprintf(resultsFile,'%f\t%f\t%f\t%f\t',NaN,NaN,NaN,NaN);		
+		else
+			fprintf(resultsFile,'%f\t%f\t%f\t%f\t',tempOut(1),tempOut(2),tempOut(3),tempOut(4));
+		end
+		
 	end
 	for i = 1:length(indices)	%Loop through conditions names
 		%NORMALIZED RESULTS
@@ -138,7 +156,11 @@ function printResults(results,constants,indices,dataFile)
 		end
 		tempOut = mean(temp);
 		normalize.BGEMG = tempOut;
-		fprintf(resultsFile,'%f\t%f\t',tempOut(1),tempOut(2));
+		if isnan(tempOut)
+			fprintf(resultsFile,'%f\t%f\t',NaN,NaN);		
+		else
+			fprintf(resultsFile,'%f\t%f\t',tempOut(1),tempOut(2));
+		end
 	end
 	for i = 1:length(indices)	%Loop through conditions names
 
@@ -150,7 +172,11 @@ function printResults(results,constants,indices,dataFile)
 		end
 		tempOut = mean(temp);
 		normalize.MEPRMS{i} = tempOut;
-		fprintf(resultsFile,'%f\t%f\t',tempOut(1),tempOut(2));
+		if isnan(tempOut)
+			fprintf(resultsFile,'%f\t%f\t',NaN,NaN);		
+		else
+			fprintf(resultsFile,'%f\t%f\t',tempOut(1),tempOut(2));
+		end
 	end
 	for i = 1:length(indices)	%Loop through conditions names
 
@@ -162,23 +188,36 @@ function printResults(results,constants,indices,dataFile)
 		end
 		tempOut = mean(temp);
 		normalize.MEPAMP{i} = tempOut;
-		fprintf(resultsFile,'%f\t%f\t',tempOut(1),tempOut(2));
+		if isnan(tempOut)
+			fprintf(resultsFile,'%f\t%f\t',NaN,NaN);		
+		else
+			fprintf(resultsFile,'%f\t%f\t',tempOut(1),tempOut(2));
+		end
 		
 	end
 
 	%Inhibition RMS results..
 	for i = 1:length(constants.inhibitionResultTitlesRMS)	%Loop through conditions names
-		for j = 1:2
-			tempOut(j) =(1-normalize.MEPRMS{i}(j)/normalize.MEPRMS{i+length(constants.inhibitionResultTitlesRMS)}(j))*100.0;
+		if isnan(normalize.MEPRMS{i})
+			fprintf(resultsFile,'%f\t%f\t',NaN,NaN);		
+		else
+			for j = 1:2
+				tempOut(j) =(1-normalize.MEPRMS{i}(j)/normalize.MEPRMS{i+length(constants.inhibitionResultTitlesRMS)}(j))*100.0;
+			end
+			fprintf(resultsFile,'%f\t%f\t',tempOut(1),tempOut(2));
 		end
-		fprintf(resultsFile,'%f\t%f\t',tempOut(1),tempOut(2));
 	end
 	%Inhibition PtoP results..
 	for i = 1:length(constants.inhibitionResultTitlesRMS)	%Loop through conditions names
-		for j = 1:2
-			tempOut(j) =(1-normalize.MEPAMP{i}(j)/normalize.MEPAMP{i+length(constants.inhibitionResultTitlesRMS)}(j))*100.0;
+		if isnan(normalize.MEPAMP{i})
+			fprintf(resultsFile,'%f\t%f\t',NaN,NaN);		
+		else
+			for j = 1:2
+				tempOut(j) =(1-normalize.MEPAMP{i}(j)/normalize.MEPAMP{i+length(constants.inhibitionResultTitlesRMS)}(j))*100.0;
+			end
+
+			fprintf(resultsFile,'%f\t%f\t',tempOut(1),tempOut(2));
 		end
-		fprintf(resultsFile,'%f\t%f\t',tempOut(1),tempOut(2));
 	end
 
 	fprintf(resultsFile,'\n');	%Print new line
