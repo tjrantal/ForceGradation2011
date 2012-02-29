@@ -19,29 +19,31 @@
 %Function for printing out result images
 function printTrialGroupSPImages(data,results,constants,indices,dataFile)
 	for i = 1:length(indices)	%Loop through conditions names
-		figureToPlotTo = figure;
-		set(figureToPlotTo,'position',[10 10 1200 1200],'visible','off');
-		for k = 1:size(data.titles,1)+1
-			subFigureToPlotTo(k) = subplot(ceil(sqrt(size(data.titles,1))),ceil(sqrt(size(data.titles,1))),k);
-		end
-		%Loop through to visualize the data...
-		for k = 1:size(data.titles,1)
-			set(figureToPlotTo,'currentaxes',subFigureToPlotTo(k) );
-			hold on;
-			for j = 1:length(indices(i).index)	%Loop through trials
-				if k == 2
-					plot(results(i).trial(j).spMovingRMS{3},'r');
-				else
-					plot(results(i).trial(j).visualizationTrace{k},'b')
-					plot(-constants.visualizationInit+results(i).trial(j).ResponseLatency{k}:-constants.visualizationInit+results(i).trial(j).ResponseLatency{k}+results(i).trial(j).silentPeriod{k}
-						,results(i).trial(j).visualizationTrace{k}(-constants.visualizationInit+results(i).trial(j).ResponseLatency{k}:-constants.visualizationInit+results(i).trial(j).ResponseLatency{k}+results(i).trial(j).silentPeriod{k}),'k')
-					
-				end
+		if	~(isempty(findstr(constants.trialGroups{i},'Single')))		%Plot only if this is single stimulus trial
+			figureToPlotTo = figure;
+			set(figureToPlotTo,'position',[10 10 1200 1200],'visible','off');
+			for k = 1:size(data.titles,1)+1
+				subFigureToPlotTo(k) = subplot(ceil(sqrt(size(data.titles,1))),ceil(sqrt(size(data.titles,1))),k);
 			end
-			title(constants.visualizationTitles{i});
+			%Loop through to visualize the data...
+			for k = 1:size(data.titles,1)
+				set(figureToPlotTo,'currentaxes',subFigureToPlotTo(k) );
+				hold on;
+				for j = 1:length(indices(i).index)	%Loop through trials
+					if k == 2
+						plot(results(i).trial(j).spMovingRMS{3},'r');
+					else
+						plot(results(i).trial(j).visualizationTrace{k},'r')
+						plot(-constants.visualizationInit+results(i).trial(j).ResponseLatency{k}:-constants.visualizationInit+results(i).trial(j).ResponseLatency{k}+results(i).trial(j).silentPeriod{k}
+							,results(i).trial(j).visualizationTrace{k}(-constants.visualizationInit+results(i).trial(j).ResponseLatency{k}:-constants.visualizationInit+results(i).trial(j).ResponseLatency{k}+results(i).trial(j).silentPeriod{k}),'k')
+						
+					end
+				end
+				title(constants.visualizationTitles{i});
+			end
+												
+			print('-dpng',['-S' num2str(1200) ',' num2str(1200)],[constants.spVisualizationFolder '\'  dataFile(1:length(dataFile)-4) '_' constants.trialGroups{i} '_' num2str(i) '.png']);
+			close(figureToPlotTo);
 		end
-											
-		print('-dpng',['-S' num2str(1200) ',' num2str(1200)],[constants.spVisualizationFolder '\'  dataFile(1:length(dataFile)-4) '_' constants.trialGroups{i} '_' num2str(i) '.png']);
-		close(figureToPlotTo);
 	end
 return

@@ -21,23 +21,23 @@ function [results] = analyseEMG(i,j,k,constants,tempData,results)
 	%results(i).trial(j).trialTrace{k} = tempData;
 	
 	%Analyse silent period. Find out 100 ms BG EMG prior to trigger. End of SP is when EMG returns to 90% of the BG
-	results(i).trial(j).silentBG{k} = sqrt(mean(tempData(constants.trigger-constants.silentPeriodEpoc:constants.trigger-1).^2)); %500 ms RMS window up to trigger
+	%results(i).trial(j).silentBG{k} = sqrt(mean(tempData(constants.trigger-constants.silentPeriodEpoc:constants.trigger-1).^2)); %500 ms RMS window up to trigger
+	results(i).trial(j).silentBG{k} = std(tempData(constants.trigger+constants.backroundEpoc:constants.trigger-1)); %500 ms RMS window up to trigger
 	spMovingRMS = [];
-	for l = 1:constants.trigger+150
-			spMovingRMS(l) = sqrt(mean(tempData(l:l+constants.silentPeriodEpoc-1).^2));
+	for l = constants.trigger+constants.spVisualizationInit:constants.trigger+150
+			%spMovingRMS(l) = sqrt(mean(tempData(l:l+constants.silentPeriodEpoc-1).^2));
+			spMovingRMS(l-constants.trigger-constants.spVisualizationInit+1) = std(tempData(l:l+constants.silentPeriodEpoc-1));
 	end
 	results(i).trial(j).spMovingRMS{k} = spMovingRMS;
-	decreasingMEP = find(spMovingRMS >= 1.5*results(i).trial(j).backgroundEMG{k},1,'last');										%Find decreasing MEP
+	%decreasingMEP = find(spMovingRMS >= 1.5*results(i).trial(j).backgroundEMG{k},1,'last');										%Find decreasing MEP
 	results(i).trial(j).silentPeriod{k} = NaN;
-	spInit = find(spMovingRMS(decreasingMEP:length(spMovingRMS)) <= 0.8*results(i).trial(j).backgroundEMG{k},1,'first');			%Find init of SP
-	if ~isempty(spInit)
-		spEnd = find(spMovingRMS(decreasingMEP+spInit:length(spMovingRMS)) >= 0.95*results(i).trial(j).backgroundEMG{k},1,'first');	%Find end of SP
+	%spInit = find(spMovingRMS(decreasingMEP:length(spMovingRMS)) <= 0.8*results(i).trial(j).backgroundEMG{k},1,'first');			%Find init of SP
+	[discard spInit] = min(spMovingRMS);			%Find SP, should be where we have minimal RMS or SD
+	if spInit > results(i).trial(j).ResponseLatency{k}
+		spEnd = find(spMovingRMS(spInit:length(spMovingRMS)) >= 0.95*results(i).trial(j).silentBG{k},1,'first');	%Find end of SP
 		if ~isempty(spEnd)
-			spEndInd = decreasingMEP+spInit+spEnd-constants.trigger;
-			%disp(num2str(spEndInd));
-			if ~isempty(spEndInd)
-				results(i).trial(j).silentPeriod{k} = spEnd-results(i).trial(j).ResponseLatency{k};
-			end
+			spEndInd = spInit+spEnd+constants.spVisualizationInit;
+			results(i).trial(j).silentPeriod{k} = spEndInd-results(i).trial(j).ResponseLatency{k};
 		end
 	end
 	

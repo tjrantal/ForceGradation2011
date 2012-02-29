@@ -24,7 +24,8 @@ close all;
 %HARD CODED CONSTANTS saved in constants structure %headings = fieldnames(data);
 constants.trigger = 1000;	%Occurrence of trigger in data points
 constants.backroundEpoc = -500;
-constants.silentPeriodEpoc = 30;	%Use 100 ms epoc for silent period analysis
+constants.silentPeriodEpoc = 20;	%Use 100 ms epoc for silent period analysis
+constants.spVisualizationInit = -100;
 constants.rmsDelay = 20;	
 constants.rmsEpoc = 30;
 constants.amplitudeDelay = 10;
