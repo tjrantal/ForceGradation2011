@@ -24,12 +24,13 @@ close all;
 %HARD CODED CONSTANTS saved in constants structure %headings = fieldnames(data);
 constants.trigger = 1000;	%Occurrence of trigger in data points
 constants.backroundEpoc = -500;
+constants.silentPeriodEpoc = 30;	%Use 100 ms epoc for silent period analysis
 constants.rmsDelay = 20;	
 constants.rmsEpoc = 30;
 constants.amplitudeDelay = 10;
 constants.amplitudeEpoc =30;	%Used to be 40
 constants.visualizationInit = -20;	%Used to be -100
-constants.visualizationEpoc = 100;	%Used to be 200
+constants.visualizationEpoc = 220;	%Used to be 200
 constants.samplingRate = 1000;	%Hz
 constants.forceScaling = 9.8*1.356;		%Force scaling
 constants.channelDelays =  [0,-200,0];	%EMGs have a delay compared to force...
@@ -42,6 +43,7 @@ constants.scriptFolder = [constants.baseFolder separator 'octaveAnalysisScripts'
 cd(constants.scriptFolder);
 
 constants.visualizationFolder =[constants.baseFolder separator 'resultImages'];
+constants.spVisualizationFolder =[constants.baseFolder separator 'spImages'];
 constants.publicationSamples =[constants.baseFolder separator 'Julkaisu' separator 'publicationSamples'];
 constants.resultsFolder = [constants.baseFolder separator 'results' separator];
 
@@ -102,10 +104,11 @@ for p = 3:length(constants.protocolFiles)
 		%Print results out
 		printResults(results,constants,indices,dataFile);
 		%Visualize the data
-			printTrialGroupImages(data,results,constants,indices,dataFile);	%Images disabled..
+		%	printTrialGroupImages(data,results,constants,indices,dataFile);	%Images disabled..
+		printTrialGroupSPImages(data,results,constants,indices,dataFile);	%Images disabled..
 		%Visualizeoverlays, manual plotting..
-			printVisualOverlays(data,results,constants,indices,dataFile);	%Images disabled...
-			printPublicationSample(data,results,constants,indices,dataFile);	%Images disabled
+		%	printVisualOverlays(data,results,constants,indices,dataFile);	%Images disabled...
+		%	printPublicationSample(data,results,constants,indices,dataFile);	%Images disabled
 	end	%Come all the way down here, if the data file does not exist...
 	clear data results indices;
 end %Get next file to analyse

@@ -26,12 +26,20 @@ function printResults(results,constants,indices,dataFile)
 		fprintf(resultsFile,'%s\t%s\t',['Ch 1 500ms BG RMS ' constants.trialGroups{i}],['Ch 3 500ms BG RMS ' constants.trialGroups{i}]);
 	end
 	for i = 1:length(indices)	%Loop through conditions names
+		%SP Background EMG
+		fprintf(resultsFile,'%s\t%s\t',['Ch 1 ' num2str(constants.silentPeriodEpoc) 'ms BG RMS ' constants.trialGroups{i}],['Ch 3 ' num2str(constants.silentPeriodEpoc) 'ms BG RMS ' constants.trialGroups{i}]);
+	end
+	for i = 1:length(indices)	%Loop through conditions names
 				%ResponseRMS
 		fprintf(resultsFile,'%s\t%s\t',['Ch 1 MEP 30ms RMS ' constants.trialGroups{i}],['Ch 3 MEP 30ms RMS ' constants.trialGroups{i}]);
 	end
 	for i = 1:length(indices)	%Loop through conditions names
 		%Response peak to peak
 		fprintf(resultsFile,'%s\t%s\t',['Ch 1 MEP peak-to-peak ' constants.trialGroups{i}],['Ch 3MEP peak-to-peak ' constants.trialGroups{i}]);
+	end
+		for i = 1:length(indices)	%Loop through conditions names
+		%Response silent period
+		fprintf(resultsFile,'%s\t%s\t',['Ch 1 SP ' constants.trialGroups{i}],['Ch 3MEP SP ' constants.trialGroups{i}]);
 	end
 	for i = 1:length(indices)	%Loop through conditions names
 		%Force fluctuation
@@ -100,6 +108,22 @@ function printResults(results,constants,indices,dataFile)
 		end
 	end
 	for i = 1:length(indices)	%Loop through conditions names
+		%SP Background EMG
+		temp = [];
+		for j = 1:length(results(i).trial)
+			temp(j,1) = results(i).trial(j).silentBG{1};
+			temp(j,2) = results(i).trial(j).silentBG{3};
+		end
+		tempOut = mean(temp);
+		if isnan(tempOut)
+			fprintf(resultsFile,'%f\t%f\t',NaN,NaN);		
+		else
+			fprintf(resultsFile,'%f\t%f\t',tempOut(1),tempOut(2));
+		end
+	end
+	
+	
+	for i = 1:length(indices)	%Loop through conditions names
 
 		%ResponseRMS
 		temp = [];
@@ -129,6 +153,22 @@ function printResults(results,constants,indices,dataFile)
 			fprintf(resultsFile,'%f\t%f\t',tempOut(1),tempOut(2));
 		end
 	end
+	
+	for i = 1:length(indices)	%Loop through conditions names
+		%Response SP
+		temp = [];
+		for j = 1:length(results(i).trial)
+			temp(j,1) = results(i).trial(j).silentPeriod{1};
+			temp(j,2) = results(i).trial(j).silentPeriod{3};
+		end
+		tempOut = mean(temp);
+		if isnan(tempOut)
+			fprintf(resultsFile,'%f\t%f\t',NaN,NaN);		
+		else
+			fprintf(resultsFile,'%f\t%f\t',tempOut(1),tempOut(2));
+		end
+	end
+	
 	for i = 1:length(indices)	%Loop through conditions names
 		%Force fluctuation
 		temp = [];
