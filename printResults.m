@@ -161,8 +161,8 @@ function printResults(results,constants,indices,dataFile)
 			temp(j,1) = results(i).trial(j).silentPeriod{1};
 			temp(j,2) = results(i).trial(j).silentPeriod{3};
 		end
-		tempOut = mean(temp);
-		if isnan(tempOut)
+		tempOut = nanmean(temp);
+		if isnan(tempOut) || tempOut(2) == 0
 			fprintf(resultsFile,'%f\t%f\t',NaN,NaN);		
 		else
 			fprintf(resultsFile,'%f\t%f\t',tempOut(1),tempOut(2));
