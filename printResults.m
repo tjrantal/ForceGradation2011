@@ -110,9 +110,17 @@ function printResults(results,constants,indices,dataFile)
 	for i = 1:length(indices)	%Loop through conditions names
 		%SP Background EMG
 		temp = [];
+		
+			
+		
 		for j = 1:length(results(i).trial)
-			temp(j,1) = results(i).trial(j).silentBG{1};
-			temp(j,2) = results(i).trial(j).silentBG{3};
+			if	~(isempty(findstr(constants.trialGroups{i},'Single')))
+				temp(j,1) = results(i).trial(j).silentBG{1};
+				temp(j,2) = results(i).trial(j).silentBG{3};
+			else
+				temp(j,1) = NaN;
+				temp(j,2) = NaN;
+			end
 		end
 		tempOut = mean(temp);
 		if isnan(tempOut)

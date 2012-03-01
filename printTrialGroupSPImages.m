@@ -31,12 +31,16 @@ function printTrialGroupSPImages(data,results,constants,indices,dataFile)
 				hold on;
 				for j = 1:length(indices(i).index)	%Loop through trials
 					if k == 2
-						plot(results(i).trial(j).spMovingRMS{3},'r');
+						%plot(results(i).trial(j).spMovingRMS{3},'r');
+						plot(results(i).spMovingRMS{3},'r');
 					else
 						plot(results(i).trial(j).visualizationTrace{k},'r')
 						plot(-constants.visualizationInit+results(i).trial(j).ResponseLatency{k}:-constants.visualizationInit+results(i).trial(j).ResponseLatency{k}+results(i).trial(j).silentPeriod{k}
 							,results(i).trial(j).visualizationTrace{k}(-constants.visualizationInit+results(i).trial(j).ResponseLatency{k}:-constants.visualizationInit+results(i).trial(j).ResponseLatency{k}+results(i).trial(j).silentPeriod{k}),'k')
-						
+						if k == 3
+							plot(-constants.visualizationInit+results(i).meanLatency{k}:-constants.visualizationInit+results(i).meanLatency{k}+results(i).silentPeriod{k}
+								,results(i).trial(j).visualizationTrace{k}(-constants.visualizationInit+results(i).meanLatency{k}:-constants.visualizationInit+results(i).meanLatency{k}+results(i).silentPeriod{k}),'g')
+						end
 					end
 				end
 				title(constants.visualizationTitles{i});

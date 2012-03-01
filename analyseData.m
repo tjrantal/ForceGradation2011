@@ -67,5 +67,8 @@ function [results] = analyseData(data,constants,indices)
 			end
 
 		end
+		if	~(isempty(findstr(constants.trialGroups{i},'Single')))
+			results = analyseSP(i,constants,results);
+		end
 	end
 return
