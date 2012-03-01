@@ -32,7 +32,10 @@ function printTrialGroupSPImages(data,results,constants,indices,dataFile)
 				for j = 1:length(indices(i).index)	%Loop through trials
 					if k == 2
 						%plot(results(i).trial(j).spMovingRMS{3},'r');
-						plot(results(i).spMovingRMS{3},'r');
+						plot(results(i).spMovingRMS{3}(-constants.spVisualizationInit+constants.visualizationInit:length(results(i).spMovingRMS{3})),'r');
+						plot(-constants.visualizationInit+results(i).meanLatency{k}:-constants.visualizationInit+results(i).meanLatency{k}+results(i).silentPeriod{k}
+								,results(i).trial(j).visualizationTrace{k}(-constants.visualizationInit+results(i).meanLatency{k}:-constants.visualizationInit+results(i).meanLatency{k}+results(i).silentPeriod{k}),'g')
+						
 					else
 						plot(results(i).trial(j).visualizationTrace{k},'r')
 						plot(-constants.visualizationInit+results(i).trial(j).ResponseLatency{k}:-constants.visualizationInit+results(i).trial(j).ResponseLatency{k}+results(i).trial(j).silentPeriod{k}
